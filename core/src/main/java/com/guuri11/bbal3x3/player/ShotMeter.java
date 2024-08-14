@@ -37,23 +37,23 @@ public class ShotMeter {
             shotMeterSpriteBatch.begin();
             shotMeterSpriteBatch.draw(shotMeterTexture, shotMeterSkin.x, shotMeterSkin.y);
 
-            // Renderizar el indicador de tiro
+            // Render shot indicator
             float indicatorSpeed = 200.0f; // ajusta la velocidad según sea necesario
             indicatorOffset += indicatorSpeed * Gdx.graphics.getDeltaTime() * (indicatorDirection / 50.0f);
 
-            // Cambiar dirección cuando el indicador alcanza los límites
+            // Change direction on arrive to limit
             if (indicatorOffset >= maxOffset) {
                 indicatorOffset = maxOffset;
-                indicatorDirection = -50; // Cambiar dirección para bajar
+                indicatorDirection = -50; // Change direction to go down
             } else if (indicatorOffset <= 0) {
                 indicatorOffset = 0;
-                indicatorDirection = 50; // Cambiar dirección para subir
+                indicatorDirection = 50; // Change direction to go up
             }
 
-            // Dibujar el indicador
+            // Draw indicator
             shotMeterSpriteBatch.end();
 
-            // Usar ShapeRenderer para dibujar el indicador como una barra blanca
+            // Use ShapeRenderer to draw the indicator with a white stick
             ShapeRenderer shapeRenderer = new ShapeRenderer();
             shapeRenderer.setProjectionMatrix(combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -75,7 +75,7 @@ public class ShotMeter {
         float greenHeightPercentage = 0.10f;
         int greenHeight = (int) (height * greenHeightPercentage);
 
-        // Degradado de negro a verde del medidor de tiro
+        // Black Green fade
         for (int y = 0; y < height; y++) {
             Color color;
             if (y < greenHeight) {

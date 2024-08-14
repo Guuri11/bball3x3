@@ -22,6 +22,9 @@ public class Player {
 
     private PlayerOrientation playerOrientation;
     private PlayerStatus playerStatus;
+    float stateTime = 0f;
+    int currentFrameIndex = 0;
+    float frameDuration = 0.25f;
 
     public Player() {
         spriteBatch = new SpriteBatch();
@@ -40,7 +43,15 @@ public class Player {
     }
 
     private void setTexture() {
-        currentTexture.setTexture(new Texture(Gdx.files.internal(String.format("Player A/Player A %s/Player_A_%s_%s_NOBALL.png", playerStatus.value, playerStatus.value, playerOrientation.value))));
+        stateTime += Gdx.graphics.getDeltaTime();
+
+        if (stateTime >= frameDuration) {
+            stateTime = 0f;
+            currentFrameIndex = (currentFrameIndex + 1) % 4;
+        }
+
+        Texture texture = new Texture(Gdx.files.internal(String.format("Player A/Player A %s/Player_A_%s_%s_NOBALL.png", playerStatus.value, playerStatus.value, playerOrientation.value)));
+        currentTexture.setRegion(new TextureRegion(texture), currentFrameIndex * 16, 0, 16, 24);
     }
 
     public void render(final Matrix4 combined) {
