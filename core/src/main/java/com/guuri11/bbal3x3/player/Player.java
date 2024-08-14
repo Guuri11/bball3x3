@@ -18,26 +18,16 @@ public class Player {
     private final SpriteBatch spriteBatch;
 
     // Textures for each direction
-    private final TextureRegion playerTextureLeft;
-    private final TextureRegion playerTextureRight;
-    private final TextureRegion playerTextureUp;
-    private final TextureRegion playerTextureDown;
-    private TextureRegion currentTexture;
+    private final TextureRegion currentTexture;
 
     private PlayerOrientation playerOrientation;
+    private PlayerStatus playerStatus;
 
     public Player() {
         spriteBatch = new SpriteBatch();
         playerOrientation = PlayerOrientation.WEST;
-
-        // Load textures
-        playerTextureLeft = new TextureRegion(new Texture(Gdx.files.internal("Player A/Player A Idle (no ball)/Player_A_Idle_West_NOBALL_strip4.png")), 0, 0, 16, 24);
-        playerTextureRight = new TextureRegion(new Texture(Gdx.files.internal("Player A/Player A Idle (no ball)/Player_A_Idle_East_NOBALL_strip4.png")), 0, 0, 16, 24);
-        playerTextureUp = new TextureRegion(new Texture(Gdx.files.internal("Player A/Player A Idle (no ball)/Player_A_Idle_North_NOBALL_strip4.png")), 0, 0, 16, 24);
-        playerTextureDown = new TextureRegion(new Texture(Gdx.files.internal("Player A/Player A Idle (no ball)/Player_A_Idle_South_NOBALL_strip4.png")), 0, 0, 16, 24);
-
-        // Set initial texture
-        currentTexture = playerTextureDown;
+        playerStatus = PlayerStatus.IDLE;
+        currentTexture = new TextureRegion(new Texture(Gdx.files.internal("Player A/Player A Idle/Player_A_Idle_West_NOBALL.png")), 0, 0, 16, 24);
 
         // Create a Rectangle to logically represent the player
         skin = new Rectangle();
@@ -49,9 +39,14 @@ public class Player {
         shotMeter = new ShotMeter(skin.height);
     }
 
+    private void setTexture() {
+        currentTexture.setTexture(new Texture(Gdx.files.internal(String.format("Player A/Player A %s/Player_A_%s_%s_NOBALL.png", playerStatus.value, playerStatus.value, playerOrientation.value))));
+    }
+
     public void render(final Matrix4 combined) {
         spriteBatch.setProjectionMatrix(combined);
         spriteBatch.begin();
+        setTexture();
         spriteBatch.draw(currentTexture, skin.x, skin.y, skin.width, skin.height);
         spriteBatch.end();
 
@@ -62,48 +57,54 @@ public class Player {
         skin.y += 200 * Gdx.graphics.getDeltaTime();
         shotMeter.moveUp();
         playerOrientation = PlayerOrientation.NORTH;
-        currentTexture = playerTextureUp; // Update texture to up direction
+        playerStatus = PlayerStatus.RUN;
     }
 
     public void moveDown() {
         skin.y -= 200 * Gdx.graphics.getDeltaTime();
         shotMeter.moveDown();
         playerOrientation = PlayerOrientation.SOUTH;
-        currentTexture = playerTextureDown; // Update texture to down direction
+        playerStatus = PlayerStatus.RUN;
     }
 
     public void moveLeft() {
         skin.x -= 200 * Gdx.graphics.getDeltaTime();
         shotMeter.moveLeft();
+        playerStatus = PlayerStatus.RUN;
         playerOrientation = PlayerOrientation.WEST;
-        currentTexture = playerTextureLeft; // Update texture to left direction
     }
 
     public void moveRight() {
         skin.x += 200 * Gdx.graphics.getDeltaTime();
         shotMeter.moveRight();
+        playerStatus = PlayerStatus.RUN;
         playerOrientation = PlayerOrientation.EAST;
-        currentTexture = playerTextureRight; // Update texture to right direction
     }
 
     public void detectBoundLeft() {
         skin.x = BALL_WIDTH + 20;
         shotMeter.detectBoundLeft(skin);
+        playerStatus = PlayerStatus.IDLE;
+        playerOrientation = PlayerOrientation.SOUTH;
     }
 
     public void detectBoundRight() {
         shotMeter.detectBoundRight();
         skin.x = shotMeter.getShotMeterSkin().x - 20 - skin.width;
+        playerStatus = PlayerStatus.IDLE;
+        playerOrientation = PlayerOrientation.SOUTH;
     }
 
     public void detectBoundTop() {
         skin.y = Gdx.graphics.getWidth() - 64;
         shotMeter.detectBoundTop(skin);
+        playerStatus = PlayerStatus.IDLE;
     }
 
     public void detectBoundBottom() {
         skin.y = 0;
         shotMeter.detectBoundBottom(skin);
+        playerStatus = PlayerStatus.IDLE;
     }
 
     public void dispose() {
