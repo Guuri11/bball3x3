@@ -1,33 +1,34 @@
-# bbal3x3
+<h1 align="center">Bball 3x3 🏀</h1>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1d0fc8ad-0e58-403a-b389-4afb090cfd15" alt="Bball3x3 demo">
+</p>
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+Bball3x3 is a basketball game made with Java & LibGDX
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+### 🏆️ Motivation
+Just for learning & fun purposes
 
-## Platforms
+## 📽️ Demo
+todo
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3.
+## 🪛 Features
 
-## Gradle
+- Render player with different statuses like running, idle
+- Render court & hoops
+- Render ball with bouce effect
+- 2d physics & movements
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+## 🛠️ Tech Stack
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/lib`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+Java 17 & LibGDX
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+## 🗺️ Roadmap
+
+- Keep adding more movements & statuses to player entity
+- Add more players in the same session
+- Start playing with ai
+- Work on jumpshots
+
+## 💻️ Installation
+
+Make sure to have Java 17, clone the project & run the desktop launcher from your IDE
