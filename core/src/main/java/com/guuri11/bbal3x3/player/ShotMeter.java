@@ -12,10 +12,10 @@ import com.badlogic.gdx.math.Rectangle;
 public class ShotMeter {
     private final Rectangle shotMeterSkin;
     private final SpriteBatch shotMeterSpriteBatch;
+    private final float maxOffset;
     private Texture shotMeterTexture;
     private float indicatorOffset = 0;
     private float indicatorDirection = 50; // Dirección de movimiento del indicador
-    private final float maxOffset;
     private boolean shooting = false;
 
     public ShotMeter(final float playerHeight) {

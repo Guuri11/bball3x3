@@ -1,5 +1,7 @@
 package com.guuri11.bbal3x3;
 
+import static com.guuri11.bbal3x3.ConfigurationProperties.*;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
@@ -12,8 +14,6 @@ import com.guuri11.bbal3x3.court.Court;
 import com.guuri11.bbal3x3.player.Player;
 import com.guuri11.bbal3x3.utils.MyInputProcessor;
 
-import static com.guuri11.bbal3x3.ConfigurationProperties.*;
-
 public class GameScreen implements Screen {
     final Bball3x3 game;
 
@@ -23,8 +23,6 @@ public class GameScreen implements Screen {
     Ball ball;
     Court court;
     MyInputProcessor inputProcessor;
-
-    Array<Rectangle> raindrops;
 
     public GameScreen(final Bball3x3 game) {
         this.game = game;

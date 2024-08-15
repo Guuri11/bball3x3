@@ -1,13 +1,13 @@
 package com.guuri11.bbal3x3.player;
 
+import static com.guuri11.bbal3x3.ball.Ball.BALL_WIDTH;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-
-import static com.guuri11.bbal3x3.ball.Ball.BALL_WIDTH;
 
 public class Player {
     public static final int PLAYER_WIDTH = 64;
@@ -19,12 +19,11 @@ public class Player {
 
     // Textures for each direction
     private final TextureRegion currentTexture;
-
-    private PlayerOrientation playerOrientation;
-    private PlayerStatus playerStatus;
     float stateTime = 0f;
     int currentFrameIndex = 0;
     float frameDuration = 0.25f;
+    private PlayerOrientation playerOrientation;
+    private PlayerStatus playerStatus;
 
     public Player() {
         spriteBatch = new SpriteBatch();

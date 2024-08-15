@@ -7,66 +7,53 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MainMenuScreen implements Screen {
 
-    final Bball3x3 game;
+  final Bball3x3 game;
 
-    OrthographicCamera camera;
+  OrthographicCamera camera;
 
-    public MainMenuScreen(final Bball3x3 game) {
-        this.game = game;
+  public MainMenuScreen(final Bball3x3 game) {
+    this.game = game;
 
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    camera = new OrthographicCamera();
+    camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+  }
+
+  @Override
+  public void show() {}
+
+  @Override
+  public void render(float delta) {
+    ScreenUtils.clear(0.2f, 0, 0.2f, 1);
+
+    camera.update();
+    game.batch.setProjectionMatrix(camera.combined);
+
+    game.batch.begin();
+    game.font.draw(game.batch, "Start BBall 3x3!!! ", 100, 150);
+    game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+    game.batch.end();
+
+    if (Gdx.input.isTouched()) {
+      game.setScreen(new GameScreen(game));
+      dispose();
     }
+  }
 
-    @Override
-    public void show() {
+  @Override
+  public void resize(int i, int i1) {}
 
-    }
+  @Override
+  public void pause() {}
 
-    @Override
-    public void render(float delta) {
-        ScreenUtils.clear(0.2f, 0, 0.2f, 1);
+  @Override
+  public void resume() {}
 
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+  @Override
+  public void hide() {}
 
-        game.batch.begin();
-        game.font.draw(game.batch, "Start BBall 3x3!!! ", 100, 150);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
-        game.batch.end();
+  @Override
+  public void dispose() {}
 
-        if (Gdx.input.isTouched()) {
-            game.setScreen(new GameScreen(game));
-            dispose();
-        }
-    }
-
-    @Override
-    public void resize(int i, int i1) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-
-    //...Rest of class omitted for succinctness.
+  // ...Rest of class omitted for succinctness.
 
 }
