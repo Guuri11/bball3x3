@@ -48,6 +48,15 @@ public class GameScreen implements Screen {
 
     game.batch.setProjectionMatrix(camera.combined);
 
+    // DETECT IF PLAYER IS SHOOTING
+    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+      player.jumpShot();
+      return;
+    }
+    if (!Gdx.input.isKeyPressed(Keys.SPACE) && player.getShotMeter().isShooting()) {
+      player.getShotMeter().setShooting(false);
+    }
+
     // DETECT IF PLAYER IS MOVING UP, LEFT, RIGHT, DOWN OR DIAGONAL DIRECTIONS
     if (Gdx.input.isKeyPressed(Keys.LEFT) && Gdx.input.isKeyPressed(Keys.UP)) {
       player.moveLeftUp();
@@ -79,9 +88,6 @@ public class GameScreen implements Screen {
         ball.moveDown(player);
       }
     }
-
-    // DETECT IF PLAYER IS SHOOTING
-    player.getShotMeter().setShooting(Gdx.input.isKeyPressed(Keys.SPACE));
 
     // DETECT GAME BOUNDS
     if (player.getSkin().x < 0 + ball.getSkin().width + 20) {

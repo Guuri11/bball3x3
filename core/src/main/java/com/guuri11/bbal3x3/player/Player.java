@@ -25,6 +25,12 @@ public class Player {
   private PlayerOrientation playerOrientation;
   private PlayerStatus playerStatus;
 
+  // Physics for jumps
+  private boolean isJumping;
+  private float velocityY;
+  private float floorY;
+  private boolean reachedJumpLimit = false;
+
   public Player() {
     spriteBatch = new SpriteBatch();
     playerOrientation = PlayerOrientation.WEST;
@@ -46,6 +52,8 @@ public class Player {
     skin.width = PLAYER_WIDTH;
     skin.height = PLAYER_HEIGHT;
 
+    velocityY = 0;
+    isJumping = false;
     shotMeter = new ShotMeter(skin.height);
   }
 
@@ -54,7 +62,7 @@ public class Player {
 
     if (stateTime >= frameDuration) {
       stateTime = 0f;
-      currentFrameIndex = (currentFrameIndex + 1) % 4;
+      currentFrameIndex = (currentFrameIndex + 1) % 2;
     }
 
     Texture texture =
@@ -67,6 +75,8 @@ public class Player {
   }
 
   public void render(final Matrix4 combined) {
+    updateJump();
+
     spriteBatch.setProjectionMatrix(combined);
     spriteBatch.begin();
     setTexture();
@@ -74,6 +84,42 @@ public class Player {
     spriteBatch.end();
 
     shotMeter.render(combined);
+  }
+
+  public void jumpShot() {
+    if (!isJumping) {
+      isJumping = true;
+      floorY = skin.y;
+      velocityY = 300;
+      playerStatus = PlayerStatus.JUMP_SHOT;
+      this.shotMeter.setShooting(true);
+      reachedJumpLimit = false;
+    }
+  }
+
+  public void updateJump() {
+    if (isJumping) {
+      // If limit was not reached, keep going up
+      float jumpHeightLimit = 1500;
+      float gravity = -1500f;
+
+      // Limit reached, start falling
+      if (reachedJumpLimit && skin.y >= floorY + jumpHeightLimit) {
+        reachedJumpLimit = true;
+      }
+
+      velocityY += gravity * Gdx.graphics.getDeltaTime();
+      skin.y += velocityY * Gdx.graphics.getDeltaTime();
+
+      // Verify that player touched the ground
+      if (skin.y <= floorY) {
+        skin.y = floorY; // make sure that player does not go through ground
+        isJumping = false;
+        velocityY = 0;
+        playerStatus = PlayerStatus.IDLE;
+        this.shotMeter.setShooting(false);
+      }
+    }
   }
 
   public void moveUp() {
@@ -84,10 +130,12 @@ public class Player {
   }
 
   public void moveDown() {
-    skin.y -= 200 * Gdx.graphics.getDeltaTime();
-    shotMeter.moveDown();
-    playerOrientation = PlayerOrientation.SOUTH;
-    playerStatus = PlayerStatus.RUN;
+    if (!isJumping) {
+      skin.y -= 200 * Gdx.graphics.getDeltaTime();
+      shotMeter.moveDown();
+      playerOrientation = PlayerOrientation.SOUTH;
+      playerStatus = PlayerStatus.RUN;
+    }
   }
 
   public void moveLeft() {
