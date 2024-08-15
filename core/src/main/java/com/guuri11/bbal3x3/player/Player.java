@@ -92,6 +92,31 @@ public class Player {
         playerOrientation = PlayerOrientation.EAST;
     }
 
+    public void moveLeftUp() {
+        moveLeft();
+        moveUp();
+        playerOrientation = PlayerOrientation.NORTH_WEST;
+    }
+
+    public void moveLeftDown() {
+        moveLeft();
+        moveDown();
+        playerOrientation = PlayerOrientation.SOUTH_WEST;
+    }
+
+    public void moveRightUp() {
+        moveRight();
+        moveUp();
+        playerOrientation = PlayerOrientation.NORTH_EAST;
+    }
+
+    public void moveRightDown() {
+        moveRight();
+        moveDown();
+        playerOrientation = PlayerOrientation.SOUTH_EAST;
+    }
+
+
     public void detectBoundLeft() {
         skin.x = BALL_WIDTH + 20;
         shotMeter.detectBoundLeft(skin);

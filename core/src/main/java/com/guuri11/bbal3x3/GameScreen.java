@@ -40,8 +40,6 @@ public class GameScreen implements Screen {
 
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        // create the raindrops array and spawn the first raindrop
-        raindrops = new Array<Rectangle>();
     }
 
     @Override
@@ -56,22 +54,35 @@ public class GameScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
 
-        // process user input
-        if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            player.moveLeft();
-            ball.moveLeft();
-        }
-        if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            player.moveRight();
-            ball.moveRight();
-        }
-        if (Gdx.input.isKeyPressed(Keys.UP)) {
-            player.moveUp();
-            ball.moveUp(player);
-        }
-        if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-            player.moveDown();
-            ball.moveDown(player);
+        if (Gdx.input.isKeyPressed(Keys.LEFT) && Gdx.input.isKeyPressed(Keys.UP)) {
+            player.moveLeftUp();
+            ball.moveLeftUp(player);
+        } else if (Gdx.input.isKeyPressed(Keys.LEFT) && Gdx.input.isKeyPressed(Keys.DOWN)) {
+            player.moveLeftDown();
+            ball.moveLeftDown(player);
+        } else if (Gdx.input.isKeyPressed(Keys.RIGHT) && Gdx.input.isKeyPressed(Keys.UP)) {
+            player.moveRightUp();
+            ball.moveRightUp(player);
+        } else if (Gdx.input.isKeyPressed(Keys.RIGHT) && Gdx.input.isKeyPressed(Keys.DOWN)) {
+            player.moveRightDown();
+            ball.moveRightDown(player);
+        } else {
+            if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+                player.moveLeft();
+                ball.moveLeft();
+            }
+            if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+                player.moveRight();
+                ball.moveRight();
+            }
+            if (Gdx.input.isKeyPressed(Keys.UP)) {
+                player.moveUp();
+                ball.moveUp(player);
+            }
+            if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+                player.moveDown();
+                ball.moveDown(player);
+            }
         }
 
         player.getShotMeter().setShooting(Gdx.input.isKeyPressed(Keys.SPACE));

@@ -55,8 +55,16 @@ public class Ball {
         shape.setProjectionMatrix(combined);
         shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(Color.ORANGE);
-        shape.ellipse(skin.x + (playerOrientation.equals(PlayerOrientation.EAST) ? PLAYER_WIDTH : 0), skin.y, skin.width, skin.height);
+        shape.ellipse(skin.x + (
+            isOrientedToEastSide(playerOrientation) ?
+                PLAYER_WIDTH : 0), skin.y, skin.width, skin.height);
         shape.end();
+    }
+
+    private static boolean isOrientedToEastSide(PlayerOrientation playerOrientation) {
+        return playerOrientation == PlayerOrientation.EAST ||
+            playerOrientation == PlayerOrientation.SOUTH_EAST ||
+            playerOrientation == PlayerOrientation.NORTH_EAST;
     }
 
     public void moveUp(final Player player) {
@@ -75,6 +83,26 @@ public class Ball {
 
     public void moveRight() {
         skin.x += 200 * Gdx.graphics.getDeltaTime();
+    }
+
+    public void moveLeftUp(final Player player) {
+        moveLeft();
+        moveUp(player);
+    }
+
+    public void moveLeftDown(final Player player) {
+        moveLeft();
+        moveDown(player);
+    }
+
+    public void moveRightUp(final Player player) {
+        moveRight();
+        moveUp(player);
+    }
+
+    public void moveRightDown(final Player player) {
+        moveRight();
+        moveDown(player);
     }
 
     public void detectBoundLeft() {
