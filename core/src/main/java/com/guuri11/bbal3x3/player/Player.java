@@ -29,9 +29,11 @@ public class Player {
   private float floorY;
   private boolean reachedJumpLimit = false;
 
+  private Team team;
   private boolean hasTheBall;
 
-  public Player() {
+  public Player(final Team team) {
+    this.team = team;
     spriteBatch = new SpriteBatch();
     playerOrientation = PlayerOrientation.WEST;
     hasTheBall = true;
@@ -41,8 +43,13 @@ public class Player {
             new Texture(
                 Gdx.files.internal(
                     String.format(
-                        "Player A/Player A %s/Player_A_%s_%s.png",
-                        playerStatus.value, playerStatus.value, playerOrientation.value))),
+                        "Player %s/Player %s %s/Player_%s_%s_%s.png",
+                        team,
+                        team,
+                        playerStatus.value,
+                        team,
+                        playerStatus.value,
+                        playerOrientation.value))),
             0,
             0,
             playerStatus.frameWidth,
@@ -72,8 +79,8 @@ public class Player {
 
     String texturePath =
         String.format(
-            "Player A/Player A %s/Player_A_%s_%s.png",
-            playerStatus.value, playerStatus.value, playerOrientation.value);
+            "Player %s/Player %s %s/Player_%s_%s_%s.png",
+            team, team, playerStatus.value, team, playerStatus.value, playerOrientation.value);
 
     Texture texture = new Texture(Gdx.files.internal(texturePath));
     currentTexture.setRegion(

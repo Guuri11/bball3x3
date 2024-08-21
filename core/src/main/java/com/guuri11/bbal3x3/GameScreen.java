@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.guuri11.bbal3x3.court.Court;
 import com.guuri11.bbal3x3.player.Player;
+import com.guuri11.bbal3x3.player.Team;
 import com.guuri11.bbal3x3.utils.MyInputProcessor;
 
 public class GameScreen implements Screen {
@@ -23,7 +24,7 @@ public class GameScreen implements Screen {
   public GameScreen(final Bball3x3 game) {
     this.game = game;
     // ball = new Ball();
-    player = new Player();
+    player = new Player(Team.B);
     court = new Court();
     // inputProcessor = new MyInputProcessor(hoopNetRight, 50, 300);
     // Gdx.input.setInputProcessor(inputProcessor);
