@@ -24,14 +24,17 @@ public class Player {
   private PlayerStatus playerStatus;
 
   // Physics for jumps
-  private boolean isShooting;
+  private boolean isJumping;
   private float velocityY;
   private float floorY;
   private boolean reachedJumpLimit = false;
 
+  private boolean hasTheBall;
+
   public Player() {
     spriteBatch = new SpriteBatch();
     playerOrientation = PlayerOrientation.WEST;
+    hasTheBall = true;
     playerStatus = PlayerStatus.IDLE_WITH_BALL;
     currentTexture =
         new TextureRegion(
@@ -55,7 +58,7 @@ public class Player {
     skin.height = PLAYER_HEIGHT;
 
     velocityY = 0;
-    isShooting = false;
+    isJumping = false;
     shotMeter = new ShotMeter(skin.height);
   }
 
@@ -94,71 +97,100 @@ public class Player {
     shotMeter.render(combined);
   }
 
-  public void jumpShot() {
-    if (!isShooting) {
-      isShooting = true;
+  public void jump() {
+    if (hasTheBall) {
+      jumpShot();
+    } else {
+      standShot();
+    }
+  }
+
+  private void jumpShot() {
+    if (!isJumping) {
+      isJumping = true;
+      frameDuration = 0.15f;
       floorY = skin.y;
       velocityY = 300;
       setPlayerStatus(PlayerStatus.JUMP_SHOT_WITH_BALL);
       this.shotMeter.setShooting(true);
-      reachedJumpLimit = false;
+    }
+  }
+
+  private void standShot() {
+    if (!isJumping) {
+      isJumping = true;
+      frameDuration = 0.15f;
+      floorY = skin.y;
+      velocityY = 300;
+      setPlayerStatus(PlayerStatus.STAND_SHOOT);
     }
   }
 
   public void updateJump() {
-    if (isShooting) {
-      // If limit was not reached, keep going up
-      float jumpHeightLimit = 1500;
-      float gravity = -1500f;
-      if (!reachedJumpLimit && skin.y < floorY + jumpHeightLimit) {
-        // Increment jump height
-        velocityY += gravity * Gdx.graphics.getDeltaTime();
-        skin.y += velocityY * Gdx.graphics.getDeltaTime();
-      } else {
-        // Limit reached, start falling
-        reachedJumpLimit = true;
-        velocityY += gravity * Gdx.graphics.getDeltaTime();
-        skin.y += velocityY * Gdx.graphics.getDeltaTime();
-      }
-
-      // Verify that player touched the ground
-      if (skin.y <= floorY) {
-        skin.y = floorY; // make sure that player does not go through ground
-        isShooting = false;
-        velocityY = 0;
-        setPlayerStatus(PlayerStatus.IDLE);
-        this.shotMeter.setShooting(false);
-      }
+    if (!isJumping) {
+      return;
     }
+
+    float jumpHeightLimit = 1500f;
+    float gravity = -1500f;
+    float deltaTime = Gdx.graphics.getDeltaTime();
+
+    if (!reachedJumpLimit && skin.y < floorY + jumpHeightLimit) {
+      // Continue jumping upwards
+      velocityY += gravity * deltaTime;
+    } else {
+      // Start falling after reaching the jump limit
+      reachedJumpLimit = true;
+      velocityY += gravity * deltaTime;
+    }
+
+    skin.y += velocityY * deltaTime;
+
+    // Check if the player touched the ground
+    if (skin.y <= floorY) {
+      skin.y = floorY; // Prevent player from going through the ground
+      resetJump();
+    }
+  }
+
+  private void resetJump() {
+    isJumping = false;
+    velocityY = 0;
+    if (hasTheBall) {
+      hasTheBall = false;
+      shotMeter.setShooting(false);
+    }
+    setPlayerStatus(PlayerStatus.IDLE);
+    frameDuration = 0.5f;
   }
 
   public void moveUp() {
     skin.y += 200 * Gdx.graphics.getDeltaTime();
     shotMeter.moveUp();
     playerOrientation = PlayerOrientation.NORTH;
-    setPlayerStatus(PlayerStatus.DRIBBLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.DRIBBLE : PlayerStatus.RUN);
   }
 
   public void moveDown() {
-    if (!isShooting) {
+    if (!isJumping) {
       skin.y -= 200 * Gdx.graphics.getDeltaTime();
       shotMeter.moveDown();
       playerOrientation = PlayerOrientation.SOUTH;
-      setPlayerStatus(PlayerStatus.DRIBBLE);
+      setPlayerStatus(hasTheBall ? PlayerStatus.DRIBBLE : PlayerStatus.RUN);
     }
   }
 
   public void moveLeft() {
     skin.x -= 200 * Gdx.graphics.getDeltaTime();
     shotMeter.moveLeft();
-    setPlayerStatus(PlayerStatus.DRIBBLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.DRIBBLE : PlayerStatus.RUN);
     playerOrientation = PlayerOrientation.WEST;
   }
 
   public void moveRight() {
     skin.x += 200 * Gdx.graphics.getDeltaTime();
     shotMeter.moveRight();
-    setPlayerStatus(PlayerStatus.DRIBBLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.DRIBBLE : PlayerStatus.RUN);
     playerOrientation = PlayerOrientation.EAST;
   }
 
@@ -189,27 +221,27 @@ public class Player {
   public void detectBoundLeft() {
     skin.x = 0;
     shotMeter.detectBoundLeft(skin);
-    setPlayerStatus(PlayerStatus.IDLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.IDLE_WITH_BALL : PlayerStatus.IDLE);
     playerOrientation = PlayerOrientation.SOUTH;
   }
 
   public void detectBoundRight() {
     shotMeter.detectBoundRight();
     skin.x = shotMeter.getShotMeterSkin().x - 20 - skin.width;
-    setPlayerStatus(PlayerStatus.IDLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.IDLE_WITH_BALL : PlayerStatus.IDLE);
     playerOrientation = PlayerOrientation.SOUTH;
   }
 
   public void detectBoundTop() {
     skin.y = Gdx.graphics.getWidth() - 64;
     shotMeter.detectBoundTop(skin);
-    setPlayerStatus(PlayerStatus.IDLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.IDLE_WITH_BALL : PlayerStatus.IDLE);
   }
 
   public void detectBoundBottom() {
     skin.y = 0;
     shotMeter.detectBoundBottom(skin);
-    setPlayerStatus(PlayerStatus.IDLE);
+    setPlayerStatus(hasTheBall ? PlayerStatus.IDLE_WITH_BALL : PlayerStatus.IDLE);
   }
 
   public void dispose() {

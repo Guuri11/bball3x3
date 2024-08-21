@@ -47,7 +47,7 @@ public class GameScreen implements Screen {
 
     // DETECT IF PLAYER IS SHOOTING
     if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-      player.jumpShot();
+      player.jump();
       return;
     }
     if (!Gdx.input.isKeyPressed(Keys.SPACE) && player.getShotMeter().isShooting()) {
