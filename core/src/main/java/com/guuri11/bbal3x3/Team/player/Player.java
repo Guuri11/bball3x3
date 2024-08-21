@@ -18,17 +18,19 @@ public class Player {
 
   // Textures for each direction
   private final TextureRegion currentTexture;
-  private final TeamName team;
   float stateTime = 0f;
   int currentFrameIndex = 0;
   float frameDuration = 0.5f;
   private PlayerOrientation playerOrientation;
   private PlayerStatus playerStatus;
+
   // Physics for jumps
   private boolean isJumping;
   private float velocityY;
   private float floorY;
   private boolean reachedJumpLimit = false;
+
+  private TeamName team;
   private boolean hasTheBall;
 
   public Player(
@@ -78,6 +80,11 @@ public class Player {
     if (stateTime >= frameDuration) {
       stateTime = 0f;
       currentFrameIndex = (currentFrameIndex + 1) % playerStatus.sprites;
+    }
+
+    // Dispose the previous texture if any
+    if (currentTexture.getTexture() != null) {
+      currentTexture.getTexture().dispose();
     }
 
     String texturePath =
