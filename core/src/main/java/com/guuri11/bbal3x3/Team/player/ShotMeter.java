@@ -13,6 +13,7 @@ public class ShotMeter {
   private final Rectangle shotMeterSkin;
   private final SpriteBatch shotMeterSpriteBatch;
   private final float maxOffset;
+  private final ShapeRenderer shapeRenderer;
   private Texture shotMeterTexture;
   private float indicatorOffset = 0;
   private float indicatorDirection = 50;
@@ -20,6 +21,7 @@ public class ShotMeter {
 
   public ShotMeter(final Player player) {
     shotMeterSpriteBatch = new SpriteBatch();
+    shapeRenderer = new ShapeRenderer();
 
     shotMeterSkin = new Rectangle();
     shotMeterSkin.x = player.getSkin().x + player.getSkin().width + 20;
@@ -63,14 +65,12 @@ public class ShotMeter {
       shotMeterSpriteBatch.end();
 
       // Use ShapeRenderer to draw the indicator with a white stick
-      ShapeRenderer shapeRenderer = new ShapeRenderer();
       shapeRenderer.setProjectionMatrix(combined);
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
       shapeRenderer.setColor(Color.WHITE);
       float indicatorY = shotMeterSkin.y + indicatorOffset;
       shapeRenderer.rect(shotMeterSkin.x - 2, indicatorY - 1, shotMeterSkin.width + 4, 2);
       shapeRenderer.end();
-      shapeRenderer.dispose();
     } else {
       indicatorOffset = 0;
     }
@@ -135,6 +135,7 @@ public class ShotMeter {
   }
 
   public void dispose() {
+    shapeRenderer.dispose();
     shotMeterSpriteBatch.dispose();
     if (shotMeterTexture != null) {
       shotMeterTexture.dispose();
