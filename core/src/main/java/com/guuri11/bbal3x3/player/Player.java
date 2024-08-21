@@ -1,7 +1,5 @@
 package com.guuri11.bbal3x3.player;
 
-import static com.guuri11.bbal3x3.ball.Ball.BALL_WIDTH;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,12 +19,12 @@ public class Player {
   private final TextureRegion currentTexture;
   float stateTime = 0f;
   int currentFrameIndex = 0;
-  float frameDuration = 0.25f;
+  float frameDuration = 0.5f;
   private PlayerOrientation playerOrientation;
   private PlayerStatus playerStatus;
 
   // Physics for jumps
-  private boolean isJumping;
+  private boolean isShooting;
   private float velocityY;
   private float floorY;
   private boolean reachedJumpLimit = false;
@@ -34,14 +32,18 @@ public class Player {
   public Player() {
     spriteBatch = new SpriteBatch();
     playerOrientation = PlayerOrientation.WEST;
-    playerStatus = PlayerStatus.IDLE;
+    playerStatus = PlayerStatus.IDLE_WITH_BALL;
     currentTexture =
         new TextureRegion(
-            new Texture(Gdx.files.internal("Player A/Player A Idle/Player_A_Idle_West_NOBALL.png")),
+            new Texture(
+                Gdx.files.internal(
+                    String.format(
+                        "Player A/Player A %s/Player_A_%s_%s.png",
+                        playerStatus.value, playerStatus.value, playerOrientation.value))),
             0,
             0,
-            16,
-            24);
+            playerStatus.frameWidth,
+            playerStatus.spriteHeight);
 
     // Create a Rectangle to logically represent the player
     skin = new Rectangle();
@@ -53,7 +55,7 @@ public class Player {
     skin.height = PLAYER_HEIGHT;
 
     velocityY = 0;
-    isJumping = false;
+    isShooting = false;
     shotMeter = new ShotMeter(skin.height);
   }
 
@@ -62,19 +64,25 @@ public class Player {
 
     if (stateTime >= frameDuration) {
       stateTime = 0f;
-      currentFrameIndex = (currentFrameIndex + 1) % 2;
+      currentFrameIndex = (currentFrameIndex + 1) % playerStatus.sprites;
     }
 
-    Texture texture =
-        new Texture(
-            Gdx.files.internal(
-                String.format(
-                    "Player A/Player A %s/Player_A_%s_%s_NOBALL.png",
-                    playerStatus.value, playerStatus.value, playerOrientation.value)));
-    currentTexture.setRegion(new TextureRegion(texture), currentFrameIndex * 16, 0, 16, 24);
+    String texturePath =
+        String.format(
+            "Player A/Player A %s/Player_A_%s_%s.png",
+            playerStatus.value, playerStatus.value, playerOrientation.value);
+
+    Texture texture = new Texture(Gdx.files.internal(texturePath));
+    currentTexture.setRegion(
+        new TextureRegion(texture),
+        currentFrameIndex * playerStatus.frameWidth,
+        0,
+        playerStatus.frameWidth,
+        playerStatus.spriteHeight);
   }
 
   public void render(final Matrix4 combined) {
+
     updateJump();
 
     spriteBatch.setProjectionMatrix(combined);
@@ -87,36 +95,38 @@ public class Player {
   }
 
   public void jumpShot() {
-    if (!isJumping) {
-      isJumping = true;
+    if (!isShooting) {
+      isShooting = true;
       floorY = skin.y;
       velocityY = 300;
-      playerStatus = PlayerStatus.JUMP_SHOT;
+      setPlayerStatus(PlayerStatus.JUMP_SHOT_WITH_BALL);
       this.shotMeter.setShooting(true);
       reachedJumpLimit = false;
     }
   }
 
   public void updateJump() {
-    if (isJumping) {
+    if (isShooting) {
       // If limit was not reached, keep going up
       float jumpHeightLimit = 1500;
       float gravity = -1500f;
-
-      // Limit reached, start falling
-      if (reachedJumpLimit && skin.y >= floorY + jumpHeightLimit) {
+      if (!reachedJumpLimit && skin.y < floorY + jumpHeightLimit) {
+        // Increment jump height
+        velocityY += gravity * Gdx.graphics.getDeltaTime();
+        skin.y += velocityY * Gdx.graphics.getDeltaTime();
+      } else {
+        // Limit reached, start falling
         reachedJumpLimit = true;
+        velocityY += gravity * Gdx.graphics.getDeltaTime();
+        skin.y += velocityY * Gdx.graphics.getDeltaTime();
       }
-
-      velocityY += gravity * Gdx.graphics.getDeltaTime();
-      skin.y += velocityY * Gdx.graphics.getDeltaTime();
 
       // Verify that player touched the ground
       if (skin.y <= floorY) {
         skin.y = floorY; // make sure that player does not go through ground
-        isJumping = false;
+        isShooting = false;
         velocityY = 0;
-        playerStatus = PlayerStatus.IDLE;
+        setPlayerStatus(PlayerStatus.IDLE);
         this.shotMeter.setShooting(false);
       }
     }
@@ -126,29 +136,29 @@ public class Player {
     skin.y += 200 * Gdx.graphics.getDeltaTime();
     shotMeter.moveUp();
     playerOrientation = PlayerOrientation.NORTH;
-    playerStatus = PlayerStatus.RUN;
+    setPlayerStatus(PlayerStatus.DRIBBLE);
   }
 
   public void moveDown() {
-    if (!isJumping) {
+    if (!isShooting) {
       skin.y -= 200 * Gdx.graphics.getDeltaTime();
       shotMeter.moveDown();
       playerOrientation = PlayerOrientation.SOUTH;
-      playerStatus = PlayerStatus.RUN;
+      setPlayerStatus(PlayerStatus.DRIBBLE);
     }
   }
 
   public void moveLeft() {
     skin.x -= 200 * Gdx.graphics.getDeltaTime();
     shotMeter.moveLeft();
-    playerStatus = PlayerStatus.RUN;
+    setPlayerStatus(PlayerStatus.DRIBBLE);
     playerOrientation = PlayerOrientation.WEST;
   }
 
   public void moveRight() {
     skin.x += 200 * Gdx.graphics.getDeltaTime();
     shotMeter.moveRight();
-    playerStatus = PlayerStatus.RUN;
+    setPlayerStatus(PlayerStatus.DRIBBLE);
     playerOrientation = PlayerOrientation.EAST;
   }
 
@@ -177,29 +187,29 @@ public class Player {
   }
 
   public void detectBoundLeft() {
-    skin.x = BALL_WIDTH + 20;
+    skin.x = 0;
     shotMeter.detectBoundLeft(skin);
-    playerStatus = PlayerStatus.IDLE;
+    setPlayerStatus(PlayerStatus.IDLE);
     playerOrientation = PlayerOrientation.SOUTH;
   }
 
   public void detectBoundRight() {
     shotMeter.detectBoundRight();
     skin.x = shotMeter.getShotMeterSkin().x - 20 - skin.width;
-    playerStatus = PlayerStatus.IDLE;
+    setPlayerStatus(PlayerStatus.IDLE);
     playerOrientation = PlayerOrientation.SOUTH;
   }
 
   public void detectBoundTop() {
     skin.y = Gdx.graphics.getWidth() - 64;
     shotMeter.detectBoundTop(skin);
-    playerStatus = PlayerStatus.IDLE;
+    setPlayerStatus(PlayerStatus.IDLE);
   }
 
   public void detectBoundBottom() {
     skin.y = 0;
     shotMeter.detectBoundBottom(skin);
-    playerStatus = PlayerStatus.IDLE;
+    setPlayerStatus(PlayerStatus.IDLE);
   }
 
   public void dispose() {
@@ -216,5 +226,12 @@ public class Player {
 
   public PlayerOrientation getCurrentOrientation() {
     return playerOrientation;
+  }
+
+  public void setPlayerStatus(PlayerStatus playerStatus) {
+    if (playerStatus.sprites < this.playerStatus.sprites) {
+      currentFrameIndex = 0;
+    }
+    this.playerStatus = playerStatus;
   }
 }
