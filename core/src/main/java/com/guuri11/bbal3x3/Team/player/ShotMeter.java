@@ -1,4 +1,4 @@
-package com.guuri11.bbal3x3.player;
+package com.guuri11.bbal3x3.Team.player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -18,15 +18,12 @@ public class ShotMeter {
   private float indicatorDirection = 50;
   private boolean shooting = false;
 
-  public ShotMeter(final float playerHeight) {
+  public ShotMeter(final Player player) {
     shotMeterSpriteBatch = new SpriteBatch();
 
     shotMeterSkin = new Rectangle();
-    shotMeterSkin.x =
-        ((float) Gdx.graphics.getWidth() / 2 - (float) Player.PLAYER_WIDTH / 4)
-            + Player.PLAYER_WIDTH
-            + 20;
-    shotMeterSkin.y = 14 + (playerHeight / 4);
+    shotMeterSkin.x = player.getSkin().x + player.getSkin().width + 20;
+    shotMeterSkin.y = player.getSkin().y + (player.getSkin().height / 4);
     shotMeterSkin.width = 12;
     shotMeterSkin.height = 48;
     generateShotMeterTexture();

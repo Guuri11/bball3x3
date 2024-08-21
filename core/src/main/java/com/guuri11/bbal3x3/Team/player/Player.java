@@ -1,4 +1,4 @@
-package com.guuri11.bbal3x3.player;
+package com.guuri11.bbal3x3.Team.player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
+import com.guuri11.bbal3x3.Team.TeamName;
 
 public class Player {
   public static final int PLAYER_WIDTH = 64;
@@ -17,27 +18,31 @@ public class Player {
 
   // Textures for each direction
   private final TextureRegion currentTexture;
+  private final TeamName team;
   float stateTime = 0f;
   int currentFrameIndex = 0;
   float frameDuration = 0.5f;
   private PlayerOrientation playerOrientation;
   private PlayerStatus playerStatus;
-
   // Physics for jumps
   private boolean isJumping;
   private float velocityY;
   private float floorY;
   private boolean reachedJumpLimit = false;
-
-  private Team team;
   private boolean hasTheBall;
 
-  public Player(final Team team) {
+  public Player(
+      final TeamName team,
+      final float x,
+      final float y,
+      final PlayerOrientation orientation,
+      final PlayerStatus status,
+      final boolean hasTheBall) {
     this.team = team;
     spriteBatch = new SpriteBatch();
-    playerOrientation = PlayerOrientation.WEST;
-    hasTheBall = true;
-    playerStatus = PlayerStatus.IDLE_WITH_BALL;
+    playerOrientation = orientation;
+    this.hasTheBall = hasTheBall;
+    playerStatus = status;
     currentTexture =
         new TextureRegion(
             new Texture(
@@ -57,16 +62,14 @@ public class Player {
 
     // Create a Rectangle to logically represent the player
     skin = new Rectangle();
-    skin.x =
-        (float) Gdx.graphics.getWidth() / 2
-            - (float) PLAYER_WIDTH / 4; // Center the player horizontally
-    skin.y = 20; // Bottom left corner of the player is 20 pixels above the bottom screen edge
+    skin.x = x;
+    skin.y = y;
     skin.width = PLAYER_WIDTH;
     skin.height = PLAYER_HEIGHT;
 
     velocityY = 0;
     isJumping = false;
-    shotMeter = new ShotMeter(skin.height);
+    shotMeter = new ShotMeter(this);
   }
 
   private void setTexture() {
@@ -253,6 +256,7 @@ public class Player {
 
   public void dispose() {
     shotMeter.dispose();
+    spriteBatch.dispose();
   }
 
   public Rectangle getSkin() {
@@ -272,5 +276,9 @@ public class Player {
       currentFrameIndex = 0;
     }
     this.playerStatus = playerStatus;
+  }
+
+  public void setHasTheBall(boolean hasTheBall) {
+    this.hasTheBall = hasTheBall;
   }
 }

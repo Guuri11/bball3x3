@@ -1,4 +1,4 @@
-package com.guuri11.bbal3x3.player;
+package com.guuri11.bbal3x3.Team.player;
 
 public enum PlayerOrientation {
   NORTH("North"),
